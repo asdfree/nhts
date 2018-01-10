@@ -4,7 +4,7 @@ Title: nhts
 Version: 0.1.0
 Author: Anthony Joseph Damico
 Maintainer: Anthony Joseph Damico <ajdamico@gmail.com>
-Description: A continuous integration package, tested on ajdamico/asdfree commit 8cf726d33d473b0a25d5d05dc8afa24f937a3f08 ajdamico/lodown commit 847021f122d2416581635df31d9752b0cc6d454b
+Description: A continuous integration package, tested on ajdamico/asdfree commit 8cf726d33d473b0a25d5d05dc8afa24f937a3f08 ajdamico/lodown commit fd8a90a0434d43fb819ae332da617512cde3a474
 License: GPL-3
 Imports: DBI, SQLite, survey, convey, lodown
 Encoding: UTF-8
