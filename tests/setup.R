@@ -135,6 +135,14 @@ sub_nhts_design <-
 	)
 
 svygini( ~ v4720 , sub_nhts_design , na.rm = TRUE )
+library(srvyr)
+nhts_srvyr_design <- as_survey( nhts_design )
+nhts_srvyr_design %>%
+	summarize( mean = survey_mean( v4720 , na.rm = TRUE ) )
+
+nhts_srvyr_design %>%
+	group_by( region ) %>%
+	summarize( mean = survey_mean( v4720 , na.rm = TRUE ) )
 svytotal( ~one , nhts_design )
 svytotal( ~factor( v0302 ) , nhts_design )
 cv( svytotal( ~factor( v0302 ) , nhts_design ) )
