@@ -16,7 +16,7 @@ nhts_cat <- subset( nhts_cat , year == 2011 )
 
 
 library(DBI)
-library(SQLite)
+library(RSQLite)
 library(survey)
 
 options( survey.lonely.psu = "adjust" )
