@@ -135,6 +135,7 @@ sub_nhts_design <-
 	)
 
 svygini( ~ v4720 , sub_nhts_design , na.rm = TRUE )
+library(dbplyr)
 library(srvyr)
 nhts_srvyr_design <- as_survey( nhts_design )
 nhts_srvyr_design %>%
