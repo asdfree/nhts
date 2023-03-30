@@ -1,0 +1,11 @@
+Package: nhts
+Type: Package
+Title: nhts
+Version: 0.1.0
+Author: Anthony Joseph Damico
+Maintainer: Anthony Joseph Damico <ajdamico@gmail.com>
+Description: A continuous integration dummy package
+License: GPL-3
+Imports: haven, survey
+Encoding: UTF-8
+LazyData: true
