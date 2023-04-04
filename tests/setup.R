@@ -46,7 +46,6 @@ hhpub_df[ , 'one' ] <- 1
 perpub_df[ , 'one' ] <- 1
 
 trippub_df[ , 'one' ] <- 1
-
 trippub_df[ !( trippub_df[ , 'trpmiles' ] %in% -9 ) , 'tripmiles_no_nines' ] <-
 	trippub_df[ !( trippub_df[ , 'trpmiles' ] %in% -9 ) , 'trpmiles' ]
 
@@ -68,7 +67,6 @@ nhts_df[ is.na( nhts_df[ , 'walks_per_person' ] ) , 'walks_per_person' ] <- 0
 nhts_df[ is.na( nhts_df[ , 'walking_miles_per_person' ] ) , 'walking_miles_per_person' ] <- 0
 
 stopifnot( nrow( nhts_df ) == nrow( perpub_df ) )
-
 # nhts_fn <- file.path( path.expand( "~" ) , "NHTS" , "this_file.rds" )
 # saveRDS( nhts_df , file = nhts_fn , compress = FALSE )
 # nhts_df <- readRDS( nhts_fn )
