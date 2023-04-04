@@ -105,15 +105,10 @@ hh_design <-
 		repweights = hhwgt_df[ grep( 'wthhfin[0-9]' , names( hhwgt_df ) , value = TRUE ) ] ,
 		scale = 6 / 7 ,
 		rscales = 1 ,
-		# degf = 98 ,
 		type = 'JK1' ,
 		mse = TRUE ,
 		data = hhpub_df
 	)
-
-# matches overall
-svytotal( ~ one , hh_design )
-# https://nhts.ornl.gov/tables09/ae/work/Job160511.html
 nhts_df <- nhts_df[ do.call( order , nhts_df[ , c( 'houseid' , 'personid' ) ] ) , ]
 perwgt_df <- perwgt_df[ do.call( order , perwgt_df[ , c( 'houseid' , 'personid' ) ] ) , ]
 
@@ -123,12 +118,10 @@ nhts_design <-
 		repweights = perwgt_df[ grep( 'wtperfin[0-9]' , names( perwgt_df ) , value = TRUE ) ] ,
 		scale = 6 / 7 ,
 		rscales = rep( 1 , 98 ) ,
-		# degf = 98 ,
 		type = 'JK1' ,
-		# mse = TRUE ,
+		mse = TRUE ,
 		data = nhts_df
 	)
-
 trippub_df <- trippub_df[ do.call( order , trippub_df[ , c( 'houseid' , 'personid' ) ] ) , ]
 perwgt_df <- perwgt_df[ do.call( order , perwgt_df[ , c( 'houseid' , 'personid' ) ] ) , ]
 
@@ -138,7 +131,6 @@ trip_design <-
 		repweights = perwgt_df[ grep( 'wttrdfin[0-9]' , names( perwgt_df ) , value = TRUE ) ] ,
 		scale = 6 / 7 ,
 		rscales = 1 ,
-		# degf = 99 ,
 		type = 'JK1' ,
 		mse = TRUE ,
 		data = trippub_df
@@ -237,28 +229,33 @@ glm_result <-
 	)
 
 summary( glm_result )
-
-# https://nhts.ornl.gov/assets/2017_nhts_summary_travel_trends.pdf#page=12
 hhsize_counts <- svytotal( ~ hhsize_categories , hh_design )
-stopifnot( all( round( coef( hhsize_counts ) / 1000 , 0 ) == c( 32952 , 40056 , 18521 , 26679 ) ) )
+
+stopifnot(
+	all( round( coef( hhsize_counts ) / 1000 , 0 ) == c( 32952 , 40056 , 18521 , 26679 ) )
+)
 
 hhsize_moe <- 
 	confint( hhsize_counts , df = ncol( hh_design$repweights ) )[ , 2 ] - coef( hhsize_counts )
 
 stopifnot( all( round( hhsize_moe / 1000 , 0 ) == c( 0 , 0 , 97 , 97 ) ) )	
-
-# https://nhts.ornl.gov/assets/2017_nhts_summary_travel_trends.pdf#page=2
-# westat author of this workshop
-# https://rawgit.com/Westat-Transportation/summarizeNHTS/master/inst/tutorials/workshop/Workshop.html#(38)
-# matches
-unwtd_n <- with(nhts_df,tapply(trips_per_person,worker,sum))
+unwtd_n <- with( nhts_df , tapply( trips_per_person , worker , sum ) )
 stopifnot( all( unwtd_n == c( 79295 , 28 , 497944 , 346305 ) ) )
-surveyed_n <- with(nhts_df,tapply(trips_per_person,worker,mean))
+
+surveyed_n <- with( nhts_df , tapply( trips_per_person , worker , mean ) )
 stopifnot( all( round( surveyed_n , 2 ) == c( 2.84 , 1.65 , 3.88 , 3.21 ) ) )
 
-# coefficients match
-a <- svyby(~trips_per_person,~worker,nhts_design,svymean)
-stopifnot( round( coef( a ) , 2 ) == c( 2.78 , 1.28 , 3.77 , 3.01 ) )
-# margin of errors match
-stopifnot( all( round(confint(a,df=ncol( nhts_design$repweights ) )[,2]-coef(a),2) == c( 0.06 , 2.21 , 0.03 , 0.06 ) ) )
+this_mean <- svyby( ~ trips_per_person , ~ worker , nhts_design , svymean )
+stopifnot( round( coef( this_mean ) , 2 ) == c( 2.78 , 1.28 , 3.77 , 3.01 ) )
 
+this_moe <- confint( this_mean , df = ncol( nhts_design$repweights ) )[ , 2 ] - coef( this_mean )
+stopifnot( all( round( this_moe , 2 ) == c( 0.06 , 2.21 , 0.03 , 0.06 ) ) )
+
+library(srvyr)
+nhts_srvyr_design <- as_survey( nhts_design )
+nhts_srvyr_design %>%
+	summarize( mean = survey_mean( miles_per_person ) )
+
+nhts_srvyr_design %>%
+	group_by( r_sex_imp ) %>%
+	summarize( mean = survey_mean( miles_per_person ) )
