@@ -81,14 +81,14 @@ walks_per_person <-
 	)
 
 names( walks_per_person ) <-
-	c( 'houseid' , 'personid' , 'walks_per_person' , 'walking_miles_per_person' )
+	c( 'houseid' , 'personid' , 'walks_per_person' , 'walk_miles_per_person' )
 nhts_df <- merge( perpub_df , trips_per_person , all.x = TRUE )
 nhts_df[ is.na( nhts_df[ , 'trips_per_person' ] ) , 'trips_per_person' ] <- 0
 nhts_df[ is.na( nhts_df[ , 'miles_per_person' ] ) , 'miles_per_person' ] <- 0
 
 nhts_df <- merge( nhts_df , walks_per_person , all.x = TRUE )
 nhts_df[ is.na( nhts_df[ , 'walks_per_person' ] ) , 'walks_per_person' ] <- 0
-nhts_df[ is.na( nhts_df[ , 'walking_miles_per_person' ] ) , 'walking_miles_per_person' ] <- 0
+nhts_df[ is.na( nhts_df[ , 'walk_miles_per_person' ] ) , 'walk_miles_per_person' ] <- 0
 
 stopifnot( nrow( nhts_df ) == nrow( perpub_df ) )
 # nhts_fn <- file.path( path.expand( "~" ) , "NHTS" , "this_file.rds" )
@@ -102,7 +102,8 @@ hhwgt_df <- hhwgt_df[ order( hhwgt_df[ , 'houseid' ] ) , ]
 hh_design <-
 	svrepdesign(
 		weight = ~ wthhfin ,
-		repweights = hhwgt_df[ grep( 'wthhfin[0-9]' , names( hhwgt_df ) , value = TRUE ) ] ,
+		repweights =
+			hhwgt_df[ grep( 'wthhfin[0-9]' , names( hhwgt_df ) , value = TRUE ) ] ,
 		scale = 6 / 7 ,
 		rscales = 1 ,
 		type = 'JK1' ,
@@ -115,7 +116,8 @@ perwgt_df <- perwgt_df[ do.call( order , perwgt_df[ , c( 'houseid' , 'personid' 
 nhts_design <-
 	svrepdesign(
 		weight = ~ wtperfin ,
-		repweights = perwgt_df[ grep( 'wtperfin[0-9]' , names( perwgt_df ) , value = TRUE ) ] ,
+		repweights =
+			perwgt_df[ grep( 'wtperfin[0-9]' , names( perwgt_df ) , value = TRUE ) ] ,
 		scale = 6 / 7 ,
 		rscales = rep( 1 , 98 ) ,
 		type = 'JK1' ,
@@ -128,7 +130,8 @@ perwgt_df <- perwgt_df[ do.call( order , perwgt_df[ , c( 'houseid' , 'personid' 
 trip_design <-
 	svrepdesign(
 		weight = ~ wttrdfin ,
-		repweights = perwgt_df[ grep( 'wttrdfin[0-9]' , names( perwgt_df ) , value = TRUE ) ] ,
+		repweights =
+			perwgt_df[ grep( 'wttrdfin[0-9]' , names( perwgt_df ) , value = TRUE ) ] ,
 		scale = 6 / 7 ,
 		rscales = 1 ,
 		type = 'JK1' ,
@@ -183,7 +186,7 @@ svyby(
 	ci = TRUE 
 )
 svyratio( 
-	numerator = ~ walking_miles_per_person , 
+	numerator = ~ walk_miles_per_person , 
 	denominator = ~ miles_per_person , 
 	nhts_design 
 )
@@ -235,8 +238,9 @@ stopifnot(
 	all( round( coef( hhsize_counts ) / 1000 , 0 ) == c( 32952 , 40056 , 18521 , 26679 ) )
 )
 
-hhsize_moe <- 
-	confint( hhsize_counts , df = ncol( hh_design$repweights ) )[ , 2 ] - coef( hhsize_counts )
+hhsize_ci <- confint( hhsize_counts , df = ncol( hh_design$repweights ) )
+
+hhsize_moe <- hhsize_ci[ , 2 ] - coef( hhsize_counts )
 
 stopifnot( all( round( hhsize_moe / 1000 , 0 ) == c( 0 , 0 , 97 , 97 ) ) )	
 unwtd_n <- with( nhts_df , tapply( trips_per_person , worker , sum ) )
@@ -248,7 +252,10 @@ stopifnot( all( round( surveyed_n , 2 ) == c( 2.84 , 1.65 , 3.88 , 3.21 ) ) )
 this_mean <- svyby( ~ trips_per_person , ~ worker , nhts_design , svymean )
 stopifnot( round( coef( this_mean ) , 2 ) == c( 2.78 , 1.28 , 3.77 , 3.01 ) )
 
-this_moe <- confint( this_mean , df = ncol( nhts_design$repweights ) )[ , 2 ] - coef( this_mean )
+this_ci <- confint( this_mean , df = ncol( nhts_design$repweights ) )
+
+this_moe <- this_ci[ , 2 ] - coef( this_mean )
+
 stopifnot( all( round( this_moe , 2 ) == c( 0.06 , 2.21 , 0.03 , 0.06 ) ) )
 
 library(srvyr)
