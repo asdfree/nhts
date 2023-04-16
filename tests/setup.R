@@ -3,7 +3,7 @@
 # who went when where why
 library(haven)
 
-nhts_download_unzip <-
+nhts_dl_uz <-
 	function( this_url ){
 	
 		tf <- tempfile()
@@ -14,13 +14,13 @@ nhts_download_unzip <-
 	}
 	
 unzipped_survey_data <-
-	nhts_download_unzip( "https://nhts.ornl.gov/assets/2016/download/sas.zip" )
+	nhts_dl_uz( "https://nhts.ornl.gov/assets/2016/download/sas.zip" )
 
 unzipped_replicate_weights <-
-	nhts_download_unzip( "https://nhts.ornl.gov/assets/2016/download/Replicates.zip" )
+	nhts_dl_uz( "https://nhts.ornl.gov/assets/2016/download/Replicates.zip" )
 
 unzipped_trip_chains <-
-	nhts_download_unzip( "https://nhts.ornl.gov/assets/2016/download/TripChain/TripChain17.zip" )
+	nhts_dl_uz( "https://nhts.ornl.gov/assets/2016/download/TripChain/TripChain17.zip" )
 nhts_import <-
 	function( this_prefix , this_unzip ){
 		
