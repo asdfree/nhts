@@ -4,7 +4,7 @@ Title: nhts
 Version: 1.0.0
 Author: Anthony Joseph Damico
 Maintainer: Anthony Joseph Damico <ajdamico@gmail.com>
-Description: A continuous integration dummy package
+Description: A continuous integration dummy package.
 License: GPL-3
 Imports: haven, survey, srvyr
 Encoding: UTF-8
